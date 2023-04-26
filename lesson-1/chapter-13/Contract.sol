@@ -1,7 +1,7 @@
-pragma solidity ^0.4.25;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
 
 contract ZombieFactory {
-
     event NewZombie(uint zombieId, string name, uint dna);
 
     uint dnaDigits = 16;
@@ -14,19 +14,18 @@ contract ZombieFactory {
 
     Zombie[] public zombies;
 
-    function _createZombie(string _name, uint _dna) private {
-        uint id = zombies.push(Zombie(_name, _dna)) - 1;
-        emit NewZombie(id, _name, _dna);
+    function _createZombie(string memory _name, uint _dna) private {
+        zombies.push(Zombie(_name, _dna));
+        emit NewZombie(zombies.length - 1, _name, _dna);
     }
 
-    function _generateRandomDna(string _str) private view returns (uint) {
-        uint rand = uint(keccak256(abi.encodePacked(_str)));
-        return rand % dnaModulus;
+    function _generateRandomDna(
+        string memory _str
+    ) private view returns (uint) {
+        return uint(keccak256(abi.encodePacked(_str))) % dnaModulus;
     }
 
-    function createRandomZombie(string _name) public {
-        uint randDna = _generateRandomDna(_name);
-        _createZombie(_name, randDna);
+    function createRandomZombie(string memory _name) public {
+        _createZombie(_name, _generateRandomDna(_name));
     }
-
 }
